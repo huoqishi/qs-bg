@@ -1,1 +1,1 @@
-# a node project boilerplate
+# react-qs-bg
