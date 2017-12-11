@@ -1,4 +1,9 @@
 const Sequelize = require('sequelize')
+/**
+ * params qs 数据库名
+ * params root 数据库用户名
+ * params      数据库密码
+ */
 const sequelize = new Sequelize('qs', 'root', '', {
   host: 'localhost',
   dialect: 'mysql', // | 'sqlite' | 'postgres' | 'mssql',

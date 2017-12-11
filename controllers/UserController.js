@@ -3,7 +3,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
 const User = require('../models/User')
-const config = require('../config/config')
+const config = require('../config')
 const dest = path.join(__dirname, '..', 'uploads/')
 const upload = multer({
   dest,
@@ -12,7 +12,19 @@ const upload = multer({
 const router = module.exports = express.Router()
 
 router.prefix = '/user'
-
+/**
+ * @api {post} /user/signin 登陆
+ * @apiName /user/status
+ * @apiGroup User
+ *
+ * @apiParam {string} username 用户名
+ * @apiParam {string} password 用户密码
+ *
+ * @apiSuccess {string} errcode 错误标识码, 0表示登陆成功
+ * @apiSuccess {string} errmsg  错误的提示信息
+ * @apiParamExample {javascript}  接口请求示例
+ * ...
+ */
 router.post('/signin', (req, res, next) => {
   const {username, password} = req.body
   User.findOne({
@@ -25,25 +37,26 @@ router.post('/signin', (req, res, next) => {
     // console.log('d')
     // 生成token，并响应
     const userJSON = user.get({plain: true})
-    // const token = jwt.sign(userJSON, 'secret')
-    const token = jwt.sign({id: userJSON.id}, 'secret')
-    console.log(token.length, '----')
-    User.update({
-      token
-    }, {
-      where: {
-        id: userJSON.id
-      }
-    }).then(user => {
-      res.set({
-        'access-token': token
-      })
-      delete userJSON.token
-      res.send({errcode: 0, errmsg: 'ok', user: userJSON})
-    }, next)
+    // 客户端刷新token还是服务器端刷新token
+    const token = jwt.sign({id: userJSON.id}, config.tokenSecret, {expiresIn: '1h'})
+    res.set({
+      'access-token': token
+    })
+    res.send({errcode: 0, errmsg: 'ok', user: userJSON})
   }, next)
 })
 
+/**
+ * @api {post} /user/signup 注册
+ * @apiName /user/signup
+ * @apiGroup User
+ *
+ * @apiParam {string} username 用户名(要求是2-16长度的字符)
+ * @apiParam {string} password 用户密码(要求是2-16长度的字符)
+ *
+ * @apiSuccess {string} errcode 错误标识码, 0表示注册成功
+ * @apiSuccess {string} errmsg  错误的提示信息
+ */
 router.post('/signup', (req, res, next) => {
   const {username, password} = req.body
   // 参数验证（Parameter verification）
@@ -76,7 +89,7 @@ router.post('/signup', (req, res, next) => {
     // console.log(11112)
     // console.log(user)
     if (user) return res.send({errcode: 1403, errmsg: '用户已存在'})
-    User.create({
+    User.create({
       username, password, nickname: username
     }).then(user => {
       // console.log('创建用户完成')
@@ -85,6 +98,16 @@ router.post('/signup', (req, res, next) => {
   }, next)
 })
 
+/**
+ * @api {post} /user/avatar 修改头像
+ * @apiName /user/avatar
+ * @apiGroup User
+ *
+ * @apiParam {file} avatar 头像文件
+ *
+ * @apiSuccess {string} errcode 错误标识码, 0表示修改成功
+ * @apiSuccess {string} errmsg  错误的提示信息
+ */
 // 修改头像
 router.patch('/avatar', upload.single('avatar'), (req, res, next) => {
   if (!req.file) {
@@ -110,7 +133,18 @@ router.patch('/avatar', upload.single('avatar'), (req, res, next) => {
   })
 })
 
-// 修改昵称
+/**
+ * @api {patch} /user/nickname 修改昵称
+ * @apiName /user/nickname
+ * @apiGroup User
+ *
+ * @apiParam {string} nickname 新的昵称(要求是2-16长度的字符)
+ *
+ * @apiSuccess {string} errcode 错误标识码, 0表示修改成功
+ * @apiSuccess {string} errmsg  错误的提示信息
+ * @apiParamExample {javascript}  接口请求示例
+ * ...
+ */
 router.patch('/nickname', (req, res, next) => {
   const {nickname} = req.body
   const regExp = /(\S){2,16}/
@@ -139,15 +173,20 @@ router.patch('/nickname', (req, res, next) => {
   })
 })
 
-// 获取自己的信息
+/**
+ * @api {get} /user 获取个人信息
+ * @apiName /user
+ * @apiGroup User
+ *
+ * @apiSuccess {string} errcode 错误标识码, 0表示获取成功
+ * @apiSuccess {string} errmsg  错误的提示信息
+ * @apiParamExample {javascript}  接口请求示例
+ * ...
+ */
 router.get('/', (req, res, next) => {
   res.send({
     errcode: 0,
     errmsg: 'ok',
     user: req.user.get({plain: true})
   })
-})
-
-router.get('/test', (req, res, next) => {
-  res.send('test is ok')
 })
