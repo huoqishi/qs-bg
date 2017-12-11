@@ -5,7 +5,7 @@ const socketIO = require('socket.io')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const glob = require('glob')
-const config = require('./config/config.js')
+const config = require('./config')
 const verfyToken = require('./middleware/tokenMiddleware')
 
 const app = express()
@@ -18,7 +18,9 @@ const io = socketIO(server)
 //   // saveUninitialized: true,
 //   // cookie: { secure: true }
 // }))
+
 app.use(verfyToken)
+
 app.use(express.static('./public'))
 app.use(express.static('./uploads'))
 app.use(bodyParser.urlencoded({extended: false}))
@@ -37,7 +39,17 @@ files.forEach(file => {
     : console.log(`${file} not provider a router `)
 })
 
-// if (config.env === 'production')
+if (config.env !== 'production') {
+  app.use((err, req, res, next) => {
+    if (!err) return res.send({errcode: 10500, errmsg: 'err'})
+    res.status(500)
+    res.send({
+      errcode: 10500,
+      errmsg: err
+    })
+  })
+}
+
 server.listen(config.PORT, err => {
   if (err) {
     return console.log('listen error', err)
