@@ -1,28 +1,21 @@
-// import { log } from 'util'
-
-/**
- * 登陆的token验证中间件
- */
 const jwt = require('jsonwebtoken')
 const config = require('../config')
-const User = require('../models/User.js')
-module.exports = function (req, res, next) {
-  // Authorization
-  const token = req.headers['access-token']
-  let payload
-  try {
-    payload = jwt.verify(token)
-    req.setHeader(payload, config.tokenSecret, {expiresIn: '1h'})
-  } catch (e) {
-    // 没有token
+
+// 生成token并添加到响应头中
+exports.genToken = (payload, res) => {
+  const token = jwt.sign(payload, config.secret, { expiresIn: config.expires, audience: config.audience, issuer: config.issuer })
+  res.setHeader('authorization', 'Bearer ' + token)
+}
+// 读取token, req.token, req.payload
+exports.verfyToken = (req, res, next) => {
+  if (!req.headers.authorization) return next()
+  const temp = req.headers.authorization.split(' ')
+  if (temp.length === 2 && temp[0] === 'Bearer') {
+    req.token = temp[1]
+    jwt.verify(req.token, config.secret, (err, data) => {
+      if (err) return next(err)
+      req.payload = data
+      next()
+    })
   }
-  if (!payload) {
-    if (req.url === '/user/signin' || req.url === '/user/signup') {
-      return next()
-    }
-  }
-  return res.send({
-    errcode: 10403,
-    errmsg: '登陆后才允许请求: ' + req.url
-  })
 }

@@ -26,7 +26,7 @@ const ThumbUp = sequelize.define('thumbup', {
 })
 // force: true 如果表已经存在，将会丢弃表
 ThumbUp.sync({force: false}).then(() => {
-  console.log('表已创建')
+  // console.log('表已创建')
   // 表已创建
   // return User.create({
   //   firstName: 'John',

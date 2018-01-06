@@ -5,11 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon index.js",
-    "build": "cross-env NODE_ENV=production node index.js",
-    "build2": "cross-env NODE_ENV=production forever index.js",
-    "apiserver": "browser-sync start --server ./docs --port 8080 --files \"./apidoc/vender/*.js,./apidoc/index.html\" & npm run watchapi",
+    "build": "forever stop index.js & cross-env NODE_ENV=production  forever start index.js",
+    "apiDev": "browser-sync start --server ./apidoc --port 8080 --files \"./apidoc/vender/*.js,./apidoc/index.html\" & npm run watchapi",
+    "apiBuild": "apidoc -i controllers/ -o docs/",
     "preapiserver": "npm run api",
-    "api": "apidoc -i controllers/ -o docs/ ",
     "watchapi": "watch 'npm run api' ./controllers/"
   },
   "keywords": [],

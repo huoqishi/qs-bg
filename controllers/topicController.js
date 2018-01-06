@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const multer = require('multer')
 const Topic = require('../models/Topic')
-const config = require('../config/config')
+const config = require('../config')
 const dest = path.join(__dirname, '..', 'uploads/')
 const upload = multer({
   dest,

@@ -3,15 +3,15 @@
  */
 const path = require('path')
 const express = require('express')
-const config = require('../config/config.js')
-const ThumbUp = require('../models/thumbUp.js')
+const config = require('../config')
+const ThumbUp = require('../models/ThumbUp.js')
 const router = module.exports = express.Router()
 router.prefix = '/thumbup'
 router.patch('/:topicId', (req, res, next) => {
   // 是否点赞
   const {thumbUp} = req.body
   const {topicId} = req.params
-  const {id} = req.user
+  const {id: userId} = req.user
   if (!(thumbUp in [0, 1])) {
     return res.send({
       errcode: '10001',
@@ -29,7 +29,7 @@ router.patch('/:topicId', (req, res, next) => {
     console.log(rows)
     if (rows[0] === 0) {
       ThumbUp.create({
-        id,
+        userId,
         topicId,
         thumbUp
       }).then(user => {

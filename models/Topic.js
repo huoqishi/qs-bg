@@ -25,7 +25,7 @@ const Topic = sequelize.define('topic', {
 })
 // force: true 如果表已经存在，将会丢弃表
 Topic.sync({force: false}).then(() => {
-  console.log('表已创建')
+  // console.log('表已创建')
   // 表已创建
   // return User.create({
   //   firstName: 'John',

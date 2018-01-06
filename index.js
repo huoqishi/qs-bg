@@ -6,7 +6,7 @@ const session = require('express-session')
 const bodyParser = require('body-parser')
 const glob = require('glob')
 const config = require('./config')
-const verfyToken = require('./middleware/tokenMiddleware')
+const {verfyToken} = require('./middleware/tokenMiddleware')
 
 const app = express()
 const server = http.createServer(app)
@@ -55,4 +55,5 @@ server.listen(config.PORT, err => {
     return console.log('listen error', err)
   }
   console.log(`please run at http://${config.IP}:${config.PORT}`)
+  console.log(`'npm run apiDev' for api docs`)
 })

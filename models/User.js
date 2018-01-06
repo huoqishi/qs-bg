@@ -1,5 +1,6 @@
 // https://segmentfault.com/a/1190000003987871
 const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 const sequelize = require('./db')
 const User = sequelize.define('users', {
   id: {
@@ -30,7 +31,7 @@ const User = sequelize.define('users', {
 })
 // force: true 如果表已经存在，将会丢弃表
 User.sync({force: false}).then(() => {
-  console.log('表已创建')
+  // console.log('表已创建')
   // 表已创建
   // return User.create({
   //   firstName: 'John',

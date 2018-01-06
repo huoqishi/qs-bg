@@ -2,7 +2,7 @@
  * 评论处理
  */
 const express = require('express')
-const config = require('../config/config.js')
+const config = require('../config')
 const Comment = require('../models/comment.js')
 const router = module.exports = express.Router()
 router.prefix = '/comments'

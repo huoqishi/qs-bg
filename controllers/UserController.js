@@ -2,8 +2,10 @@ const path = require('path')
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
+// const Sequelize = require('sequelize')
 const User = require('../models/User')
 const config = require('../config')
+// const Op = Sequelize.Op
 const dest = path.join(__dirname, '..', 'uploads/')
 const upload = multer({
   dest,
@@ -89,7 +91,7 @@ router.post('/signup', (req, res, next) => {
     // console.log(11112)
     // console.log(user)
     if (user) return res.send({errcode: 1403, errmsg: '用户已存在'})
-    User.create({
+    User.create({
       username, password, nickname: username
     }).then(user => {
       // console.log('创建用户完成')
